@@ -1,5 +1,6 @@
 from math import sqrt
 
+
 def dist(a, b):
     xa, ya = a
     xb, yb = b
