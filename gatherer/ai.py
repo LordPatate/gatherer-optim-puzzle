@@ -1,31 +1,6 @@
+from gatherer.model import Action, ActionType, MoveAction
 from gatherer.utils import dist
 import gatherer.const as const
-
-
-class Action:
-    NOTHING = 0
-    MOVE = 1
-    PICK = 2
-    DROP = 3
-
-    def __init__(self):
-        self.actionType = Action.NOTHING
-
-
-class MoveAction(Action):
-    def __init__(self, dest):
-        self.dest = dest
-        self.actionType = Action.MOVE
-
-
-class PickAction(Action):
-    def __init__(self):
-        self.actionType = Action.PICK
-
-
-class DropAction(Action):
-    def __init__(self):
-        self.actionType = Action.DROP
 
 
 class AI:
@@ -62,18 +37,18 @@ class AI:
 
         return target
 
-    def update(hero, world):
+    def update(hero, world) -> Action:
         '''
         Returns the next action to take
         '''
         if len(hero.bag) > 2 or AI.remaining(hero, world) == 0:
             if hero.pos == AI.HOME_POS:
-                return DropAction()
+                return Action(ActionType.DROP)
 
             return MoveAction(AI.HOME_POS)
 
         item = AI.nearest(hero, world)
         if dist(hero.pos, item.pos) <= const.LEASH_LENGTH:
-            return PickAction()
+            return Action(ActionType.PICK)
 
         return MoveAction(item.pos)

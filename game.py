@@ -3,6 +3,7 @@ from asyncio import sleep, create_task, run
 
 import gatherer.const as const
 from gatherer.ai import AI
+from gatherer.model import ActionType
 from gatherer.stuff import Hero, Item
 from gatherer.utils import dist
 
@@ -39,11 +40,11 @@ async def main():
 
         # UPDATE
         action = AI.update(hero, world)
-        if action.actionType == action.MOVE:
+        if action.action_type == ActionType.MOVE:
             hero.toward(action.dest)
-        elif action.actionType == action.PICK:
+        elif action.action_type == ActionType.PICK:
             hero.pick(world)
-        elif action.actionType == action.DROP:
+        elif action.action_type == ActionType.DROP:
             hero.bag.clear()
 
         for item in hero.bag:
