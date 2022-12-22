@@ -1,54 +1,58 @@
-from gatherer.model import Action, ActionType, MoveAction
+from gatherer.model.actions import Action, ActionType, MoveAction
+from gatherer.model.type_aliases import Coordinate
 from gatherer.utils import dist
 import gatherer.const as const
 
+HOME_POS: Coordinate = (
+    (const.WINDOW_W - const.HERO_W) / 2,
+    (const.WINDOW_H - const.HERO_H) / 2,
+)
 
-class AI:
-    HOME_POS = ((const.WINDOW_W - const.HERO_W) / 2,
-                (const.WINDOW_H - const.HERO_H) / 2)
 
-    def remaining(hero, world):
-        '''
-        Counts the number of item not in the bag or at AI.HOME_POS
-        '''
-        count = 0
+def update(hero, world) -> Action:
+    """
+    Returns the next action to take
+    """
+    if len(hero.bag) > 2 or remaining(hero, world) == 0:
+        if hero.pos == HOME_POS:
+            return Action(ActionType.DROP)
 
-        for item in world:
-            if dist(item.pos, AI.HOME_POS) > const.LEASH_LENGTH + const.ITEM_W \
-                    and item not in hero.bag:
-                count += 1
+        return MoveAction(HOME_POS)
 
-        return count
+    item = nearest(hero, world)
+    if dist(hero.pos, item.pos) <= const.LEASH_LENGTH:
+        return Action(ActionType.PICK)
 
-    def nearest(hero, world):
-        '''
-        Returns the nearest item that is not in the bag or at AI.HOME_POS
-        '''
-        target, d = None, float('inf')
+    return MoveAction(item.pos)
 
-        for item in world:
-            if dist(item.pos, AI.HOME_POS) < const.LEASH_LENGTH + const.ITEM_W \
-                    or item in hero.bag:
-                continue
 
-            item_dist = dist(item.pos, hero.pos)
-            if item_dist < d:
-                target, d = item, item_dist
+def nearest(hero, world):
+    """
+    Returns the nearest item that is not in the bag or at AI.HOME_POS
+    """
+    target, d = None, float('inf')
 
-        return target
+    for item in world:
+        if dist(item.pos, HOME_POS) < const.LEASH_LENGTH + const.ITEM_W \
+                or item in hero.bag:
+            continue
 
-    def update(hero, world) -> Action:
-        '''
-        Returns the next action to take
-        '''
-        if len(hero.bag) > 2 or AI.remaining(hero, world) == 0:
-            if hero.pos == AI.HOME_POS:
-                return Action(ActionType.DROP)
+        item_dist = dist(item.pos, hero.pos)
+        if item_dist < d:
+            target, d = item, item_dist
 
-            return MoveAction(AI.HOME_POS)
+    return target
 
-        item = AI.nearest(hero, world)
-        if dist(hero.pos, item.pos) <= const.LEASH_LENGTH:
-            return Action(ActionType.PICK)
 
-        return MoveAction(item.pos)
+def remaining(hero, world):
+    """
+    Counts the number of item not in the bag or at AI.HOME_POS
+    """
+    count = 0
+
+    for item in world:
+        if dist(item.pos, HOME_POS) > const.LEASH_LENGTH + const.ITEM_W \
+                and item not in hero.bag:
+            count += 1
+
+    return count

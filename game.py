@@ -3,7 +3,7 @@ from asyncio import create_task, run, sleep
 import pygame
 
 import gatherer.const as const
-from gatherer.ai import AI
+from gatherer.ai import update
 from gatherer.model.actions import ActionType, MoveAction
 from gatherer.model.moveable_objects import Hero
 from gatherer.model.type_aliases import Coordinate
@@ -44,7 +44,7 @@ async def main():
                 item.pos, (const.ITEM_W, const.ITEM_H)))
 
         # UPDATE
-        action = AI.update(hero, world)
+        action = update(hero, world)
         if action.action_type == ActionType.MOVE:
             assert isinstance(action, MoveAction)
             hero.toward(action.dest)
