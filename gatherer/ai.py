@@ -1,5 +1,5 @@
-from utils import dist
-import const
+from gatherer.utils import dist
+import gatherer.const as const
 
 
 class Action:

@@ -1,7 +1,7 @@
 from random import randint
 
-import const
-from utils import dist
+import gatherer.const as const
+from gatherer.utils import dist
 
 
 class Item:

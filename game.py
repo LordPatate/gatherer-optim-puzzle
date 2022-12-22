@@ -1,10 +1,10 @@
 import pygame
 from asyncio import sleep, create_task, run
 
-import const
-from ai import AI
-from stuff import Hero, Item
-from utils import dist
+import gatherer.const as const
+from gatherer.ai import AI
+from gatherer.stuff import Hero, Item
+from gatherer.utils import dist
 
 pygame.init()
 
