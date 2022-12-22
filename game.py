@@ -3,7 +3,7 @@ from asyncio import sleep, create_task, run
 
 import gatherer.const as const
 from gatherer.ai import AI
-from gatherer.model import ActionType
+from gatherer.model import ActionType, Coordinate
 from gatherer.stuff import Hero, Item
 from gatherer.utils import dist
 
@@ -19,8 +19,10 @@ itemSpr = pygame.Surface((const.ITEM_W, const.ITEM_H))
 itemSpr.fill(const.RED)
 
 
-origin = ((const.WINDOW_W - const.HERO_W) / 2,
-          (const.WINDOW_H - const.HERO_H) / 2)
+origin: Coordinate = (
+    (const.WINDOW_W - const.HERO_W) / 2,
+    (const.WINDOW_H - const.HERO_H) / 2,
+)
 hero = Hero(origin)
 world = Item.generate(const.ITEM_AMOUNT)
 

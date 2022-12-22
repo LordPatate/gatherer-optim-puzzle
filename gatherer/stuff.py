@@ -1,14 +1,15 @@
 from random import randint
 
 import gatherer.const as const
+from gatherer.model import Coordinate
 from gatherer.utils import dist
 
 
 class Item:
-    def __init__(self, pos):
+    def __init__(self, pos: Coordinate):
         self.pos = pos
 
-    def toward(self, dest):
+    def toward(self, dest: Coordinate):
         d = dist(self.pos, dest)
         if d < const.STEP_LENGTH:
             self.pos = dest
@@ -33,7 +34,7 @@ class Item:
 
 
 class Hero(Item):
-    def __init__(self, pos):
+    def __init__(self, pos: Coordinate):
         self.pos = pos
         self.bag = set()
 
