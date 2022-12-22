@@ -1,9 +1,7 @@
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Tuple
 
-
-Coordinate = Tuple[float, float]
+from gatherer.model.type_aliases import Coordinate
 
 
 class ActionType(Enum):

@@ -1,13 +1,14 @@
-from random import randint
+from dataclasses import dataclass, field
+from typing import Set
 
 import gatherer.const as const
-from gatherer.model import Coordinate
+from gatherer.model.type_aliases import Coordinate
 from gatherer.utils import dist
 
 
+@dataclass(eq=False)
 class Item:
-    def __init__(self, pos: Coordinate):
-        self.pos = pos
+    pos: Coordinate
 
     def toward(self, dest: Coordinate):
         d = dist(self.pos, dest)
@@ -22,21 +23,13 @@ class Item:
         y = (yd - yp) * ratio
         self.pos = xp + x, yp + y
 
-    def generate(n):
-        world = set()
-        for i in range(n):
-
-            x = randint(0, const.WINDOW_W - const.ITEM_W)
-            y = randint(0, const.WINDOW_H - const.ITEM_H)
-            world.add(Item((x, y)))
-
-        return world
+    def __hash__(self):
+        return hash(id(self))
 
 
+@dataclass(eq=False)
 class Hero(Item):
-    def __init__(self, pos: Coordinate):
-        self.pos = pos
-        self.bag = set()
+    bag: Set[Item] = field(default_factory=set, init=False)
 
     def pick(self, world):
         for item in world:
@@ -44,3 +37,6 @@ class Hero(Item):
                     and item not in self.bag \
                     and len(self.bag) < const.BAG_LIMIT:
                 self.bag.add(item)
+
+    def __hash__(self):
+        return hash(id(self))

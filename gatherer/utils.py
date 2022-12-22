@@ -1,6 +1,6 @@
 from math import sqrt
 
-from gatherer.model import Coordinate
+from gatherer.model.type_aliases import Coordinate
 
 
 def dist(a: Coordinate, b: Coordinate):

@@ -1,11 +1,14 @@
+from asyncio import create_task, run, sleep
+
 import pygame
-from asyncio import sleep, create_task, run
 
 import gatherer.const as const
 from gatherer.ai import AI
-from gatherer.model import ActionType, Coordinate
-from gatherer.stuff import Hero, Item
+from gatherer.model.actions import ActionType, MoveAction
+from gatherer.model.moveable_objects import Hero
+from gatherer.model.type_aliases import Coordinate
 from gatherer.utils import dist
+from gatherer.world import generate
 
 pygame.init()
 
@@ -24,7 +27,7 @@ origin: Coordinate = (
     (const.WINDOW_H - const.HERO_H) / 2,
 )
 hero = Hero(origin)
-world = Item.generate(const.ITEM_AMOUNT)
+world = generate(const.ITEM_AMOUNT)
 
 
 async def main():
@@ -43,6 +46,7 @@ async def main():
         # UPDATE
         action = AI.update(hero, world)
         if action.action_type == ActionType.MOVE:
+            assert isinstance(action, MoveAction)
             hero.toward(action.dest)
         elif action.action_type == ActionType.PICK:
             hero.pick(world)
