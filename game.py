@@ -35,7 +35,7 @@ async def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
-        task = create_task(sleep(0.01))
+        task = create_task(sleep(1/const.FPS))
 
         pygame.draw.rect(window, const.WHITE, pygame.Rect(
             hero.pos, (const.HERO_W, const.HERO_H)))
