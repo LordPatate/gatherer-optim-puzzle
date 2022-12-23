@@ -13,7 +13,7 @@ def update(hero, world) -> Action:
     """
     Returns the next action to take
     """
-    if len(hero.bag) > 2 or remaining(hero, world) == 0:
+    if len(hero.bag) > const.BAG_LIMIT - 1 or remaining(hero, world) == 0:
         if hero.pos == HOME_POS:
             return Action(ActionType.DROP)
 
@@ -28,7 +28,7 @@ def update(hero, world) -> Action:
 
 def nearest(hero, world):
     """
-    Returns the nearest item that is not in the bag or at AI.HOME_POS
+    Returns the nearest item that is not in the bag or at HOME_POS
     """
     target, d = None, float('inf')
 
@@ -46,7 +46,7 @@ def nearest(hero, world):
 
 def remaining(hero, world):
     """
-    Counts the number of item not in the bag or at AI.HOME_POS
+    Counts the number of item not in the bag or at HOME_POS
     """
     count = 0
 
