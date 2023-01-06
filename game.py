@@ -49,7 +49,7 @@ def get_next_action() -> Action:
 
 def send_state_to_ai():
     serialized_state = serialize_game_state(hero, world)
-    proc.stdin.write(serialized_state)
+    proc.stdin.write(serialized_state + "\n")
     proc.stdin.flush()
 
 
