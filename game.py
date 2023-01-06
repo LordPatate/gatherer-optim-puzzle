@@ -1,14 +1,14 @@
 from asyncio import create_task, run, sleep
+from subprocess import PIPE, Popen
 
 import pygame
 
 import gatherer.const as const
-from gatherer.ai import update
-from gatherer.model.actions import ActionType, MoveAction
+from gatherer.model.actions import Action, ActionType, MoveAction, parse_action
 from gatherer.model.moveable_objects import Hero
 from gatherer.model.type_aliases import Coordinate
 from gatherer.utils import dist
-from gatherer.world import generate
+from gatherer.world import generate, serialize_game_state
 
 pygame.init()
 
@@ -29,13 +29,37 @@ origin: Coordinate = (
 hero = Hero(origin)
 world = generate(const.ITEM_AMOUNT)
 
+proc = Popen(
+    ["python", "ai.py"],
+    stdin=PIPE,
+    stdout=PIPE,
+    stderr=PIPE,
+    text=True,
+)
+
+
+def get_next_action() -> Action:
+    return_code = proc.poll()
+    if return_code is not None:
+        raise RuntimeError(f"AI stopped with return code {return_code}. stderr:\n" + proc.stderr.read())
+    assert proc.stdout is not None
+    action = parse_action(proc.stdout)
+    return action
+
+
+def send_state_to_ai():
+    serialized_state = serialize_game_state(hero, world)
+    proc.stdin.write(serialized_state)
+    proc.stdin.flush()
+
 
 async def main():
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
-        task = create_task(sleep(1/const.FPS))
+        sleep_task = create_task(sleep(1/const.FPS))
+        send_state_to_ai()
 
         pygame.draw.rect(window, const.WHITE, pygame.Rect(
             hero.pos, (const.HERO_W, const.HERO_H)))
@@ -44,7 +68,7 @@ async def main():
                 item.pos, (const.ITEM_W, const.ITEM_H)))
 
         # UPDATE
-        action = update(hero, world)
+        action = get_next_action()
         if action.action_type == ActionType.MOVE:
             assert isinstance(action, MoveAction)
             hero.toward(action.dest)
@@ -63,8 +87,12 @@ async def main():
             window.blit(itemSpr, item.pos)
 
         pygame.display.flip()
-        await task
+        await sleep_task
+
 
 run(main())
+
+proc.stdin.close()
+proc.wait()
 
 pygame.display.quit()

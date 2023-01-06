@@ -1,7 +1,8 @@
-from gatherer.model.actions import Action, ActionType, MoveAction
-from gatherer.model.type_aliases import Coordinate
-from gatherer.utils import dist
 import gatherer.const as const
+from gatherer.model.actions import Action, ActionType, MoveAction
+from gatherer.model.moveable_objects import Hero, Item
+from gatherer.model.type_aliases import Coordinate
+from gatherer.utils import dist, parse_coordinate
 
 HOME_POS: Coordinate = (
     (const.WINDOW_W - const.HERO_W) / 2,
@@ -26,7 +27,7 @@ def update(hero, world) -> Action:
     return MoveAction(item.pos)
 
 
-def nearest(hero, world):
+def nearest(hero, world) -> Item:
     """
     Returns the nearest item that is not in the bag or at HOME_POS
     """
@@ -44,7 +45,7 @@ def nearest(hero, world):
     return target
 
 
-def remaining(hero, world):
+def remaining(hero, world) -> int:
     """
     Counts the number of item not in the bag or at HOME_POS
     """
@@ -56,3 +57,21 @@ def remaining(hero, world):
             count += 1
 
     return count
+
+
+def main():
+    hero = Hero(parse_coordinate(input()))
+    world = {
+        Item(parse_coordinate(input()))
+        for _ in range(const.ITEM_AMOUNT)
+    }
+    action = update(hero, world)
+    print(action.serialize())
+
+
+if __name__ == "__main__":
+    try:
+        while True:
+            main()
+    except EOFError:
+        pass
