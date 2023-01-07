@@ -2,7 +2,8 @@ import gatherer.const as const
 from gatherer.model.actions import Action, ActionType, MoveAction
 from gatherer.model.moveable_objects import Hero, Item
 from gatherer.model.type_aliases import Coordinate
-from gatherer.utils import dist, parse_coordinate
+from gatherer.utils import dist
+from gatherer.serialization import parse_coordinate, serialize
 
 HOME_POS: Coordinate = (
     (const.WINDOW_W - const.HERO_W) / 2,
@@ -66,7 +67,7 @@ def main():
         for _ in range(const.ITEM_AMOUNT)
     }
     action = update(hero, world)
-    print(action.serialize())
+    print(serialize(action))
 
 
 if __name__ == "__main__":

@@ -13,13 +13,3 @@ def generate(n: int) -> Set[Item]:
         world.add(Item((x, y)))
 
     return world
-
-
-def serialize_game_state(hero, world) -> str:
-    serialized_items = (
-        item.serialize()
-        for item in world
-    )
-    return "\n".join(
-        (hero.serialize(), *serialized_items)
-    )

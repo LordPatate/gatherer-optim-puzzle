@@ -4,11 +4,13 @@ from subprocess import PIPE, Popen
 import pygame
 
 import gatherer.const as const
-from gatherer.model.actions import Action, ActionType, MoveAction, parse_action
+from gatherer.game_state import GameState
+from gatherer.model.actions import Action, ActionType, MoveAction
 from gatherer.model.moveable_objects import Hero
 from gatherer.model.type_aliases import Coordinate
+from gatherer.serialization import parse_action, serialize
 from gatherer.utils import dist
-from gatherer.world import generate, serialize_game_state
+from gatherer.world import generate
 
 pygame.init()
 
@@ -48,7 +50,7 @@ def get_next_action() -> Action:
 
 
 def send_state_to_ai():
-    serialized_state = serialize_game_state(hero, world)
+    serialized_state = serialize(GameState(hero, world))
     proc.stdin.write(serialized_state + "\n")
     proc.stdin.flush()
 

@@ -3,7 +3,7 @@ from typing import Set
 
 import gatherer.const as const
 from gatherer.model.type_aliases import Coordinate
-from gatherer.utils import dist, serialize_coordinate
+from gatherer.utils import dist
 
 
 @dataclass(eq=False)
@@ -22,9 +22,6 @@ class Item:
         x = (xd - xp) * ratio
         y = (yd - yp) * ratio
         self.pos = xp + x, yp + y
-
-    def serialize(self):
-        return serialize_coordinate(self.pos)
 
     def __hash__(self):
         return hash(id(self))
