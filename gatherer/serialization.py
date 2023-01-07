@@ -1,10 +1,11 @@
 from functools import singledispatch
-from typing import IO
 
-from gatherer.model.actions import Action, ActionType, MoveAction
-from gatherer.model.moveable_objects import Hero, Item
-from gatherer.model.type_aliases import Coordinate
 from gatherer.game_state import GameState
+from gatherer.model.actions import Action, ActionType, MoveAction
+from gatherer.model.moveable_objects import Item
+from gatherer.model.type_aliases import Coordinate
+
+MOVE_ACTION_SEP = ':'
 
 
 @singledispatch
@@ -41,7 +42,7 @@ def serialize_action(action: Action) -> str:
 
 @serialize.register
 def serialize_move_action(action: MoveAction) -> str:
-    return f"{serialize_action(action)}\n{serialize(action.dest)}"
+    return f"{serialize_action(action)}{MOVE_ACTION_SEP}{serialize(action.dest)}"
 
 
 def parse_coordinate(source: str) -> Coordinate:
@@ -49,11 +50,10 @@ def parse_coordinate(source: str) -> Coordinate:
     return float(x), float(y)
 
 
-def parse_action(source: IO[str]) -> Action:
-    action_type_line = source.readline()
-    action_type = ActionType(int(action_type_line))
+def parse_action(source: str) -> Action:
+    split_source = source.split(sep=MOVE_ACTION_SEP)
+    action_type = ActionType(int(split_source[0]))
     if action_type == ActionType.MOVE:
-        dest_line = source.readline()
-        dest = parse_coordinate(dest_line)
+        dest = parse_coordinate(split_source[1])
         return MoveAction(dest)
     return Action(action_type)

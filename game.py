@@ -45,7 +45,8 @@ def get_next_action() -> Action:
     if return_code is not None:
         raise RuntimeError(f"AI stopped with return code {return_code}. stderr:\n" + proc.stderr.read())
     assert proc.stdout is not None
-    action = parse_action(proc.stdout)
+    line = proc.stdout.readline()
+    action = parse_action(line)
     return action
 
 
