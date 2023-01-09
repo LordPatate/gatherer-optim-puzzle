@@ -1,5 +1,6 @@
 from asyncio import create_task, run, sleep
 from subprocess import PIPE, Popen
+from uuid import uuid4
 
 import pygame
 
@@ -28,7 +29,8 @@ origin: Coordinate = (
     (const.WINDOW_W - const.HERO_W) / 2,
     (const.WINDOW_H - const.HERO_H) / 2,
 )
-hero = Hero(origin)
+hero_uuid = uuid4()
+hero = Hero(hero_uuid, origin)
 world = generate(const.ITEM_AMOUNT)
 
 proc = Popen(

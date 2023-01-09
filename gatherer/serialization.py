@@ -1,11 +1,12 @@
 from functools import singledispatch
+from uuid import UUID
 
 from gatherer.game_state import GameState
 from gatherer.model.actions import Action, ActionType, MoveAction
-from gatherer.model.moveable_objects import Item
+from gatherer.model.moveable_objects import Hero, Item
 from gatherer.model.type_aliases import Coordinate
 
-MOVE_ACTION_SEP = ':'
+SEP = ':'
 
 
 @singledispatch
@@ -19,9 +20,24 @@ def serialize_coordinate(pos: Coordinate) -> str:
     return f"{x} {y}"
 
 
+def parse_coordinate(source: str) -> Coordinate:
+    x, y = source.split()
+    return float(x), float(y)
+
+
 @serialize.register
 def serialize_item(item: Item) -> str:
-    return serialize_coordinate(item.pos)
+    return f"{item.uuid.hex}{SEP}{serialize_coordinate(item.pos)}"
+
+
+def parse_item(source: str) -> Item:
+    uuid_hex, pos_source = source.split(sep=SEP)
+    return Item(UUID(uuid_hex), parse_coordinate(pos_source))
+
+
+def parse_hero(source: str) -> Hero:
+    uuid_hex, pos_source = source.split(sep=SEP)
+    return Hero(UUID(uuid_hex), parse_coordinate(pos_source))
 
 
 @serialize.register
@@ -42,16 +58,11 @@ def serialize_action(action: Action) -> str:
 
 @serialize.register
 def serialize_move_action(action: MoveAction) -> str:
-    return f"{serialize_action(action)}{MOVE_ACTION_SEP}{serialize(action.dest)}"
-
-
-def parse_coordinate(source: str) -> Coordinate:
-    x, y = source.split()
-    return float(x), float(y)
+    return f"{serialize_action(action)}{SEP}{serialize(action.dest)}"
 
 
 def parse_action(source: str) -> Action:
-    split_source = source.split(sep=MOVE_ACTION_SEP)
+    split_source = source.split(sep=SEP)
     action_type = ActionType(int(split_source[0]))
     if action_type == ActionType.MOVE:
         dest = parse_coordinate(split_source[1])

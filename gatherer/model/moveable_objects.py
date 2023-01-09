@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from typing import Set
+from uuid import UUID
 
 import gatherer.const as const
 from gatherer.model.type_aliases import Coordinate
@@ -8,6 +9,7 @@ from gatherer.utils import dist
 
 @dataclass(eq=False)
 class Item:
+    uuid: UUID
     pos: Coordinate
 
     def toward(self, dest: Coordinate):
@@ -24,7 +26,7 @@ class Item:
         self.pos = xp + x, yp + y
 
     def __hash__(self):
-        return hash(id(self))
+        return self.uuid.int
 
 
 @dataclass(eq=False)
@@ -37,6 +39,3 @@ class Hero(Item):
                     and item not in self.bag \
                     and len(self.bag) < const.BAG_LIMIT:
                 self.bag.add(item)
-
-    def __hash__(self):
-        return hash(id(self))
