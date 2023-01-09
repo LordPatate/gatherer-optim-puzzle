@@ -61,11 +61,17 @@ def remaining(hero, world) -> int:
 
 
 def main():
-    hero = parse_hero(input())
+    partially_initialized_hero = parse_hero(input())
     world = {
         parse_item(input())
         for _ in range(const.ITEM_AMOUNT)
     }
+    bag = {
+        item
+        for item in world
+        if item.uuid.hex in partially_initialized_hero.bag
+    }
+    hero = Hero(partially_initialized_hero.uuid, partially_initialized_hero.pos, bag)
     action = update(hero, world)
     print(serialize(action))
 

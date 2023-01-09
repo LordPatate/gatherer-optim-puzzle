@@ -31,7 +31,7 @@ class Item:
 
 @dataclass(eq=False)
 class Hero(Item):
-    bag: Set[Item] = field(default_factory=set, init=False)
+    bag: Set[Item]
 
     def pick(self, world):
         for item in world:
@@ -39,3 +39,8 @@ class Hero(Item):
                     and item not in self.bag \
                     and len(self.bag) < const.BAG_LIMIT:
                 self.bag.add(item)
+
+
+@dataclass(eq=False)
+class PartiallyInitializedHero(Item):
+    bag: Set[str]

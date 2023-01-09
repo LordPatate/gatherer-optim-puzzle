@@ -3,10 +3,11 @@ from uuid import UUID
 
 from gatherer.game_state import GameState
 from gatherer.model.actions import Action, ActionType, MoveAction
-from gatherer.model.moveable_objects import Hero, Item
+from gatherer.model.moveable_objects import Hero, Item, PartiallyInitializedHero
 from gatherer.model.type_aliases import Coordinate
 
 SEP = ':'
+BAG_SEP = '+'
 
 
 @singledispatch
@@ -35,9 +36,21 @@ def parse_item(source: str) -> Item:
     return Item(UUID(uuid_hex), parse_coordinate(pos_source))
 
 
-def parse_hero(source: str) -> Hero:
-    uuid_hex, pos_source = source.split(sep=SEP)
-    return Hero(UUID(uuid_hex), parse_coordinate(pos_source))
+@serialize.register
+def serialize_hero(hero: Hero) -> str:
+    serialized_bag = ",".join(
+        item.uuid.hex
+        for item in hero.bag
+    )
+    return f"{serialize_item(hero)}{BAG_SEP}{serialized_bag}"
+
+
+def parse_hero(source: str) -> PartiallyInitializedHero:
+    item_source, bag_source = source.split(sep=BAG_SEP)
+    uuid_hex, pos_source = item_source.split(sep=SEP)
+    bag = set(bag_source.split(sep=","))
+    hero = PartiallyInitializedHero(UUID(uuid_hex), parse_coordinate(pos_source), bag)
+    return hero
 
 
 @serialize.register

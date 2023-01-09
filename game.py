@@ -30,7 +30,7 @@ origin: Coordinate = (
     (const.WINDOW_H - const.HERO_H) / 2,
 )
 hero_uuid = uuid4()
-hero = Hero(hero_uuid, origin)
+hero = Hero(hero_uuid, origin, set())
 world = generate(const.ITEM_AMOUNT)
 
 proc = Popen(
